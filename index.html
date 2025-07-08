@@ -8,25 +8,17 @@
 </head>
 <body style="margin: 0; overflow: hidden;">
    <a-scene embedded arjs>  
-    <!-- Use default marker for simplicity, test with 'hiro' -->
-    <a-marker preset='hiro'>
+    <a-marker-camera preset='custom' url='Assets/pattern-ArifyStudioMarker_inverse.patt'>
 
-<a-box position='0 0.5 0' material='color: black;'></a-box>
+      <a-box position='0 0.5 0' material='color: red;'></a-box>
       
-      <!-- Replace with your converted GLB model path --
-      <a-entity 
-        gltf-model="Assets/Whale.glb" 
-        position="0 0 0" 
-        scale="3 3 3">
-      </a-entity>>
-      
-      <!-- Text with color and rotation -->
-      <a-entity 
-        position="0 1 0" 
-        text="value: Welcome!; align: center; color: red" 
-        rotation="90 0 0"
-        scale = "2 2 2">
-      </a-entity>
+        <!-- Text with color and rotation -->
+        <a-entity 
+          position="0 1 0" 
+          text="value: Welcome!; align: center; color: red" 
+          rotation="90 0 0"
+          scale = "2 2 2">
+        </a-entity>
       
   	<!-- </a-marker> -->
   	</a-marker-camera>
