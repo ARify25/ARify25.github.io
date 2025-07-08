@@ -10,14 +10,15 @@
 <body style="margin: 0; overflow: hidden;">
    <a-scene embedded arjs>  
      <a-marker-camera type='pattern' url='Assets/pattern-ArifyStudioMarker_inverse.patt'></a-marker-camera>
-      <a-assets>
+      
+     <a-assets>
         <a-asset-item id="Whale" src="Assets/Whale.gltf"></a-asset-item>
       </a-assets>
      
       <a-entity 
         gltf-model="##Whale" 
-        position="1 1 1" 
-        scale="10 10 10">
+        position="0 1 0" 
+        scale="0.1 0.1 0.1">
       </a-entity>
       
         <!-- Text with color and rotation -->
