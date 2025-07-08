@@ -6,13 +6,13 @@
     <body style="margin : 0px; overflow: hidden;">
         <a-scene embedded arjs>
         <!-- <a-marker preset="hiro"> -->
-  	<a-marker-camera preset='custom' url='Assets/marker/pattern-ArifyStudioMarker_inverse.patt'>
+  	<a-marker-camera preset='custom' url='Assets/pattern-ArifyStudioMarker_inverse.patt'>
             <!-- we use cors proxy to avoid cross-origin problems ATTENTION! you need to set up your server -->
            <a-entity position="0 3 0" 
   			geometry="primitive: plane; width: 15; height: 5"
   			material="color: blue"
   			text="value: Welcome to ARify. What can we build with you?"></a-entity>
-        </a-marker>
+        </a-marker-camera>
         <a-entity camera></a-entity>
         </a-scene>
     </body>
