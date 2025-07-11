@@ -1,2 +1,0 @@
-# prototype
-AR Project Prototype
