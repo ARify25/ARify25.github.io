@@ -1,28 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes' />
+    <meta charset="utf-8">
+    <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'>
     <title>Unity WebGL Player | WebGL-FirstTest</title>
-    <link rel="stylesheet" href="TemplateData/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-
+    <link rel="stylesheet" href="TemplateData/style.css">
     <style>
-        /* Hide any camera selection dropdown completely */
-        select, #cameraSelector, select#cameraSelector {
-            display: none !important;
+         html{
+            height: -webkit-fill-available;
         }
 
-        html, body {
+        body {
             margin: 0;
             padding: 0;
-            height: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             width: 100vw;
             overflow: hidden;
-            font-family: 'Poppins', sans-serif;
-            background-color: #111;
-            color: #fff;
-            position: relative;
         }
 
         .ctaDiv {
@@ -31,118 +25,29 @@
             align-items: center;
             justify-content: center;
             position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: #fffa;
             z-index: 99;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .ctaDiv p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin-bottom: 20px;
-        }
-
-        .ctaDiv button {
-            padding: 12px 24px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            background-color: red;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 80%;
-            max-width: 280px;
-        }
-
-        .ctaDiv button:hover {
-            background-color: white;
-            color: black;
-        }
-
-        #unity-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            background: none;
-            overflow: hidden;
-        }
-
-        canvas#unity-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            background-color: transparent !important;
-            z-index: 10;
-            position: relative;
-        }
-
-        /* Style video to cover background behind canvas */
-        video#webcamVideo {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: cover !important;
-            z-index: 0 !important;
-            background: transparent !important;
-        }
-
-        #unity-loading-bar {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            max-width: 400px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            overflow: hidden;
-            z-index: 20;
-        }
-
-        #unity-progress-bar-full {
-            width: 0;
-            height: 100%;
-            background-color: #1e90ff;
-            transition: width 0.3s ease;
-        }
-
-        #unity-logo {
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            .ctaDiv p {
-                font-size: 1rem;
-            }
-            .ctaDiv button {
-                font-size: 0.95rem;
-                padding: 10px 16px;
-            }
-            #unity-loading-bar {
-                width: 90%;
-            }
         }
     </style>
+
 </head>
 <body>
     <script src="app.js" type="text/javascript"></script>
-
+    <!--IMAGETARGETS-->
     <div id="startWebcamDiv" class="ctaDiv">
-        <p>This augmented reality experience requires access to your device's camera</p>
-        <button id="startCameraBtn" onclick="StartCamera()">ALLOW ACCESS</button>
+        <p style="text-align: center; width:60vw">This augmented reality experience requires access to your device's camera</p>
+        <button id="startCameraBtn" onclick="StartCamera()" style="display:none">ALLOW ACCESS</button>
+    </div>
+    <div id="startWebcamManuallyDiv" style="display: none" class="ctaDiv">
+        <button onclick="StartCameraManually()" style="width:180px; height:40px; border:1px solid gray; border-radius:8px">START WEBCAM</button>
     </div>
 
-    <!-- Video element for webcam feed (hidden until webcam starts) -->
-    <video id="webcamVideo" autoplay playsinline muted></video>
-
     <div id="unity-container" class="unity-desktop">
-        <canvas id="unity-canvas"></canvas>
+        <canvas id="unity-canvas" style="width: 100%; height: 100%; background: #0000; z-index: -99"></canvas>
         <div id="unity-loading-bar">
             <div id="unity-logo"></div>
             <div id="unity-progress-bar-empty">
@@ -150,39 +55,24 @@
             </div>
         </div>
     </div>
-
     <script src="Build/WEBGL_AR.loader.js"></script>
     <script>
-        var container = document.querySelector("#unity-container");
-        var canvas = document.querySelector("#unity-canvas");
-        var loadingBar = document.querySelector("#unity-loading-bar");
-        var progressBarFull = document.querySelector("#unity-progress-bar-full");
-        var webcamVideo = document.getElementById("webcamVideo");
+            var container = document.querySelector("#unity-container");
+            var canvas = document.querySelector("#unity-canvas");
+            var loadingBar = document.querySelector("#unity-loading-bar");
+            var progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            container.className = "unity-mobile";
-        }
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                container.className = "unity-mobile";
+            }
 
-        async function StartCamera() {
-            // Hide start UI
-            document.getElementById("startWebcamDiv").style.display = "none";
-
-            // Resize canvas
-            canvas.style.width = window.innerWidth + "px";
-            canvas.style.height = window.innerHeight + "px";
-
-            loadingBar.style.display = "block";
-
-            try {
-                // Get default webcam stream
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            function StartCamera() {
+                canvas.style.width = window.innerWidth + "px";
+                canvas.style.height = window.innerHeight + "px";
                 
-                // Set stream to video element to show preview behind Unity canvas
-                webcamVideo.srcObject = stream;
-                webcamVideo.style.display = "block";
+                document.getElementById("startWebcamDiv").style.display = "none";
 
-                // Initialize Unity instance
-                createUnityInstance(canvas, {
+                createUnityInstance(document.querySelector("#unity-canvas"), {
                     dataUrl: "Build/WEBGL_AR.data",
                     frameworkUrl: "Build/WEBGL_AR.framework.js",
                     codeUrl: "Build/WEBGL_AR.wasm",
@@ -190,29 +80,42 @@
                     companyName: "DefaultCompany",
                     productName: "WebGL-FirstTest",
                     productVersion: "0.1.0",
-                }, (progress) => {
-                    progressBarFull.style.width = 100 * progress + "%";
-                }).then((unityInstance) => {
+                    //webglContextAttributes: { "preserveDrawingBuffer": true },
+                    // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+                    // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+                    },
+                    (progress) => {
+                        progressBarFull.style.width = 100 * progress + "%";
+                    }
+                ).then((unityInstance) => {
                     window.gameInstance = unityInstance;
                     window.unityInstance = unityInstance;
+                    window.iTracker.startWebcam();
 
-                    // If your iTracker uses the same stream or needs to be told to start:
-                    if (window.iTracker && typeof window.iTracker.startWebcam === 'function') {
-                        // Optionally pass stream here or just call
-                        window.iTracker.startWebcam();
-                    } else {
-                        console.warn("iTracker.startWebcam() not available");
-                    }
+                    //[FIX]: some browsers (such as Wechat) does not allow webcam autoplay so we need to start the webcam manually via new button press
+                    window.waitForVideo = () => {
+                        setTimeout(() => {
+                            if (!window.iTracker.VIDEO) {
+                                window.waitForVideo();
+                            }
+                            else if (window.iTracker.VIDEO.currentTime <= 0) {
+                                document.getElementById("startWebcamManuallyDiv").style.display = "flex";
+                            }
+                        }, 2500)
+                    };
+                    window.waitForVideo();
 
                     loadingBar.style.display = "none";
                 });
-            } catch (err) {
-                console.error("Error accessing webcam:", err);
-                alert("Unable to access camera. Please allow camera permissions and refresh.");
-                document.getElementById("startWebcamDiv").style.display = "flex";
-                loadingBar.style.display = "none";
+
+                loadingBar.style.display = "block";
             }
-        }
+
+            function StartCameraManually() {
+                document.getElementById("startWebcamManuallyDiv").style.display = "none";
+                iTracker.VIDEO.play()
+            }
+
     </script>
 </body>
 </html>
