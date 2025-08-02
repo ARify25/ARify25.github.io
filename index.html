@@ -56,6 +56,37 @@
             max-width: 280px;
         }
 
+        #startWebcamDiv select {
+    position: relative;
+    margin-bottom: 20px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: #222;
+    color: white;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    outline: none;
+    max-width: 280px;
+    width: 80%;
+    text-align: center;
+}
+
+#startWebcamDiv select:hover {
+    background-color: #333;
+}
+
+#startWebcamDiv select:focus {
+    border: 1px solid #1e90ff;
+}
+
+#startWebcamDiv option {
+    background-color: #222;
+    color: white;
+}
+
         .ctaDiv button:hover {
             background-color: white;
             color: black;
@@ -99,6 +130,40 @@
             display: none;
         }
 
+        /* Webcam dropdown styling */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            background-color: #222;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            outline: none;
+            position: absolute;
+            bottom: 5px;
+            z-index: 1000;
+            max-width: 240px;
+        }
+
+        select:hover {
+            background-color: #333;
+        }
+
+        select:focus {
+            border: 1px solid #1e90ff;
+        }
+
+        option {
+            background-color: #222;
+            color: white;
+        }
+
         @media (max-width: 600px) {
             .ctaDiv p {
                 font-size: 1rem;
@@ -112,14 +177,20 @@
             #unity-loading-bar {
                 width: 90%;
             }
+
+            select {
+                top: auto;
+                bottom: 20px;
+                right: 50%;
+                transform: translateX(50%);
+            }
         }
 
-        /* Optional CSS fallback: Hides any HTML overlay that could contain camera label */
+        /* Optional fallback: Hide HTML overlay labels */
         canvas + div {
             display: none !important;
         }
 
-        /* If Unity is generating any overlay text labels via DOM (unlikely) */
         [id*="camera"], [class*="camera"] {
             display: none !important;
         }
