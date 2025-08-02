@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'>
     <title>Unity WebGL Player | WebGL-FirstTest</title>
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-         html{
-            height: -webkit-fill-available;
+        :root {
+            --vh: 1vh;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
+            font-family: 'Poppins', sans-serif;
+            height: calc(var(--vh, 1vh) * 100);
             width: 100vw;
             overflow: hidden;
+            background-color: #111;
+            color: #fff;
         }
 
         .ctaDiv {
@@ -25,97 +28,210 @@
             align-items: center;
             justify-content: center;
             position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            background: #fffa;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
             z-index: 99;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ctaDiv p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .ctaDiv button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #1e90ff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 280px;
+        }
+
+        .ctaDiv button:hover {
+            background-color: #3aa0ff;
+        }
+
+        #unity-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas#unity-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background-color: transparent;
+            z-index: -1;
+        }
+
+        #unity-loading-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 400px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #unity-progress-bar-full {
+            width: 0;
+            height: 100%;
+            background-color: #1e90ff;
+            transition: width 0.3s ease;
+        }
+
+        #unity-logo {
+            display: none;
+        }
+
+        /* Dropdown Styling */
+        select.camera-select {
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 8px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position-x: calc(100% - 10px);
+            background-position-y: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            margin-top: 10px;
+            width: 80%;
+            max-width: 280px;
+        }
+
+        select.camera-select:focus {
+            outline: none;
+            border-color: #3aa0ff;
+            box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .ctaDiv p {
+                font-size: 1rem;
+            }
+
+            .ctaDiv button, select.camera-select {
+                font-size: 0.95rem;
+                padding: 10px 16px;
+            }
+
+            #unity-loading-bar {
+                width: 90%;
+            }
         }
     </style>
-
 </head>
 <body>
+    <script>
+        // Fix for mobile viewport height
+        function setVhUnit() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        }
+        window.addEventListener('resize', setVhUnit);
+        window.addEventListener('load', setVhUnit);
+    </script>
+
     <script src="app.js" type="text/javascript"></script>
-    <!--IMAGETARGETS-->
+
     <div id="startWebcamDiv" class="ctaDiv">
-        <p style="text-align: center; width:60vw">This augmented reality experience requires access to your device's camera</p>
-        <button id="startCameraBtn" onclick="StartCamera()" style="display:none">ALLOW ACCESS</button>
+        <p>This augmented reality experience requires access to your device's camera.</p>
+        <button id="startCameraBtn" onclick="StartCamera()">ALLOW ACCESS</button>
     </div>
-    <div id="startWebcamManuallyDiv" style="display: none" class="ctaDiv">
-        <button onclick="StartCameraManually()" style="width:180px; height:40px; border:1px solid gray; border-radius:8px">START WEBCAM</button>
+
+    <div id="startWebcamManuallyDiv" class="ctaDiv" style="display: none;">
+        <button onclick="StartCameraManually()">START WEBCAM</button>
     </div>
 
     <div id="unity-container" class="unity-desktop">
-        <canvas id="unity-canvas" style="width: 100%; height: 100%; background: #0000; z-index: -99"></canvas>
+        <canvas id="unity-canvas"></canvas>
         <div id="unity-loading-bar">
-            <div id="unity-logo"></div>
-            <div id="unity-progress-bar-empty">
-                <div id="unity-progress-bar-full"></div>
-            </div>
+            <div id="unity-progress-bar-full"></div>
         </div>
     </div>
+
     <script src="Build/WEBGL_AR.loader.js"></script>
     <script>
-            var container = document.querySelector("#unity-container");
-            var canvas = document.querySelector("#unity-canvas");
-            var loadingBar = document.querySelector("#unity-loading-bar");
-            var progressBarFull = document.querySelector("#unity-progress-bar-full");
+        const container = document.querySelector("#unity-container");
+        const canvas = document.querySelector("#unity-canvas");
+        const loadingBar = document.querySelector("#unity-loading-bar");
+        const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-                container.className = "unity-mobile";
-            }
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            container.className = "unity-mobile";
+        }
 
-            function StartCamera() {
-                canvas.style.width = window.innerWidth + "px";
-                canvas.style.height = window.innerHeight + "px";
-                
-                document.getElementById("startWebcamDiv").style.display = "none";
+        function StartCamera() {
+            canvas.style.width = window.innerWidth + "px";
+            canvas.style.height = window.innerHeight + "px";
 
-                createUnityInstance(document.querySelector("#unity-canvas"), {
-                    dataUrl: "Build/WEBGL_AR.data",
-                    frameworkUrl: "Build/WEBGL_AR.framework.js",
-                    codeUrl: "Build/WEBGL_AR.wasm",
-                    streamingAssetsUrl: "StreamingAssets",
-                    companyName: "DefaultCompany",
-                    productName: "WebGL-FirstTest",
-                    productVersion: "0.1.0",
-                    //webglContextAttributes: { "preserveDrawingBuffer": true },
-                    // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-                    // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-                    },
-                    (progress) => {
-                        progressBarFull.style.width = 100 * progress + "%";
-                    }
-                ).then((unityInstance) => {
-                    window.gameInstance = unityInstance;
-                    window.unityInstance = unityInstance;
-                    window.iTracker.startWebcam();
+            document.getElementById("startWebcamDiv").style.display = "none";
 
-                    //[FIX]: some browsers (such as Wechat) does not allow webcam autoplay so we need to start the webcam manually via new button press
-                    window.waitForVideo = () => {
-                        setTimeout(() => {
-                            if (!window.iTracker.VIDEO) {
-                                window.waitForVideo();
-                            }
-                            else if (window.iTracker.VIDEO.currentTime <= 0) {
-                                document.getElementById("startWebcamManuallyDiv").style.display = "flex";
-                            }
-                        }, 2500)
-                    };
-                    window.waitForVideo();
+            createUnityInstance(canvas, {
+                dataUrl: "Build/WEBGL_AR.data",
+                frameworkUrl: "Build/WEBGL_AR.framework.js",
+                codeUrl: "Build/WEBGL_AR.wasm",
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "DefaultCompany",
+                productName: "WebGL-FirstTest",
+                productVersion: "0.1.0"
+            }, (progress) => {
+                progressBarFull.style.width = (progress * 100) + "%";
+            }).then((unityInstance) => {
+                window.gameInstance = unityInstance;
+                window.unityInstance = unityInstance;
+                window.iTracker.startWebcam();
 
-                    loadingBar.style.display = "none";
-                });
+                window.waitForVideo = () => {
+                    setTimeout(() => {
+                        if (!window.iTracker.VIDEO) {
+                            window.waitForVideo();
+                        } else if (window.iTracker.VIDEO.currentTime <= 0) {
+                            document.getElementById("startWebcamManuallyDiv").style.display = "flex";
+                        }
+                    }, 2500);
+                };
+                window.waitForVideo();
 
-                loadingBar.style.display = "block";
-            }
+                loadingBar.style.display = "none";
+            });
 
-            function StartCameraManually() {
-                document.getElementById("startWebcamManuallyDiv").style.display = "none";
-                iTracker.VIDEO.play()
-            }
+            loadingBar.style.display = "block";
+        }
 
+        function StartCameraManually() {
+            document.getElementById("startWebcamManuallyDiv").style.display = "none";
+            iTracker.VIDEO.play();
+        }
+
+        // Auto-style camera dropdowns
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('select').forEach(select => {
+                if (!select.classList.contains('camera-select')) {
+                    select.classList.add('camera-select');
+                }
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
     </script>
 </body>
 </html>
