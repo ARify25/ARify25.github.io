@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'>
     <title>Unity WebGL Player | WebGL-FirstTest</title>
     <link rel="stylesheet" href="TemplateData/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --vh: 1vh;
+        html {
+            height: -webkit-fill-available;
         }
 
-        html, body {
+        body {
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
-            height: calc(var(--vh, 1vh) * 100);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             width: 100vw;
             overflow: hidden;
+            font-family: 'Poppins', sans-serif;
             background-color: #111;
             color: #fff;
         }
@@ -50,7 +52,6 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin-top: 20px;
             width: 80%;
             max-width: 280px;
         }
@@ -97,39 +98,12 @@
             display: none;
         }
 
-        /* Dropdown Styling */
-        select.camera-select {
-            padding: 10px 16px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            background-color: #222;
-            color: #fff;
-            border: 1px solid #444;
-            border-radius: 8px;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-            background-repeat: no-repeat;
-            background-position-x: calc(100% - 10px);
-            background-position-y: center;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-            margin-top: 10px;
-            width: 80%;
-            max-width: 280px;
-        }
-
-        select.camera-select:focus {
-            outline: none;
-            border-color: #3aa0ff;
-            box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.3);
-        }
-
         @media (max-width: 600px) {
             .ctaDiv p {
                 font-size: 1rem;
             }
 
-            .ctaDiv button, select.camera-select {
+            .ctaDiv button {
                 font-size: 0.95rem;
                 padding: 10px 16px;
             }
@@ -141,20 +115,11 @@
     </style>
 </head>
 <body>
-    <script>
-        // Fix for mobile viewport height
-        function setVhUnit() {
-            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-        }
-        window.addEventListener('resize', setVhUnit);
-        window.addEventListener('load', setVhUnit);
-    </script>
-
     <script src="app.js" type="text/javascript"></script>
 
     <div id="startWebcamDiv" class="ctaDiv">
-        <p>This augmented reality experience requires access to your device's camera.</p>
-        <button id="startCameraBtn" onclick="StartCamera()">ALLOW ACCESS</button>
+        <p>This augmented reality experience requires access to your device's camera</p>
+        <button id="startCameraBtn" onclick="StartCamera()" style="display: none;">ALLOW ACCESS</button>
     </div>
 
     <div id="startWebcamManuallyDiv" class="ctaDiv" style="display: none;">
@@ -164,16 +129,19 @@
     <div id="unity-container" class="unity-desktop">
         <canvas id="unity-canvas"></canvas>
         <div id="unity-loading-bar">
-            <div id="unity-progress-bar-full"></div>
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
         </div>
     </div>
 
     <script src="Build/WEBGL_AR.loader.js"></script>
     <script>
-        const container = document.querySelector("#unity-container");
-        const canvas = document.querySelector("#unity-canvas");
-        const loadingBar = document.querySelector("#unity-loading-bar");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var progressBarFull = document.querySelector("#unity-progress-bar-full");
 
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             container.className = "unity-mobile";
@@ -185,16 +153,16 @@
 
             document.getElementById("startWebcamDiv").style.display = "none";
 
-            createUnityInstance(canvas, {
+            createUnityInstance(document.querySelector("#unity-canvas"), {
                 dataUrl: "Build/WEBGL_AR.data",
                 frameworkUrl: "Build/WEBGL_AR.framework.js",
                 codeUrl: "Build/WEBGL_AR.wasm",
                 streamingAssetsUrl: "StreamingAssets",
                 companyName: "DefaultCompany",
                 productName: "WebGL-FirstTest",
-                productVersion: "0.1.0"
+                productVersion: "0.1.0",
             }, (progress) => {
-                progressBarFull.style.width = (progress * 100) + "%";
+                progressBarFull.style.width = 100 * progress + "%";
             }).then((unityInstance) => {
                 window.gameInstance = unityInstance;
                 window.unityInstance = unityInstance;
@@ -207,7 +175,7 @@
                         } else if (window.iTracker.VIDEO.currentTime <= 0) {
                             document.getElementById("startWebcamManuallyDiv").style.display = "flex";
                         }
-                    }, 2500);
+                    }, 2500)
                 };
                 window.waitForVideo();
 
@@ -221,17 +189,6 @@
             document.getElementById("startWebcamManuallyDiv").style.display = "none";
             iTracker.VIDEO.play();
         }
-
-        // Auto-style camera dropdowns
-        const observer = new MutationObserver(() => {
-            document.querySelectorAll('select').forEach(select => {
-                if (!select.classList.contains('camera-select')) {
-                    select.classList.add('camera-select');
-                }
-            });
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
     </script>
 </body>
 </html>
