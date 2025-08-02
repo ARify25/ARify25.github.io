@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes' />
+    <meta charset="utf-8">
+    <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'>
     <title>Unity WebGL Player | WebGL-FirstTest</title>
-    <link rel="stylesheet" href="TemplateData/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Hide any camera selection dropdown completely */
-        select, #cameraSelector, select#cameraSelector {
-            display: none !important;
+        html {
+            height: -webkit-fill-available;
         }
 
-        html, body {
+        body {
             margin: 0;
             padding: 0;
-            height: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             width: 100vw;
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
             background-color: #111;
             color: #fff;
-            position: relative;
         }
 
         .ctaDiv {
@@ -65,30 +64,15 @@
         #unity-container {
             position: relative;
             width: 100%;
-            height: 100vh;
-            background: none;
-            overflow: hidden;
+            height: 100%;
         }
 
         canvas#unity-canvas {
             width: 100%;
             height: 100%;
             display: block;
-            background-color: transparent !important;
-            z-index: 10;
-            position: relative;
-        }
-
-        /* Style video to cover background behind canvas */
-        video#webcamVideo {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: cover !important;
-            z-index: 0 !important;
-            background: transparent !important;
+            background-color: transparent;
+            z-index: -1;
         }
 
         #unity-loading-bar {
@@ -102,7 +86,6 @@
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             overflow: hidden;
-            z-index: 20;
         }
 
         #unity-progress-bar-full {
@@ -120,13 +103,25 @@
             .ctaDiv p {
                 font-size: 1rem;
             }
+
             .ctaDiv button {
                 font-size: 0.95rem;
                 padding: 10px 16px;
             }
+
             #unity-loading-bar {
                 width: 90%;
             }
+        }
+
+        /* Optional CSS fallback: Hides any HTML overlay that could contain camera label */
+        canvas + div {
+            display: none !important;
+        }
+
+        /* If Unity is generating any overlay text labels via DOM (unlikely) */
+        [id*="camera"], [class*="camera"] {
+            display: none !important;
         }
     </style>
 </head>
@@ -135,11 +130,12 @@
 
     <div id="startWebcamDiv" class="ctaDiv">
         <p>This augmented reality experience requires access to your device's camera</p>
-        <button id="startCameraBtn" onclick="StartCamera()">ALLOW ACCESS</button>
+        <button id="startCameraBtn" onclick="StartCamera()" style="display: none;">ALLOW ACCESS</button>
     </div>
 
-    <!-- Video element for webcam feed (hidden until webcam starts) -->
-    <video id="webcamVideo" autoplay playsinline muted></video>
+    <div id="startWebcamManuallyDiv" class="ctaDiv" style="display: none;">
+        <button onclick="StartCameraManually()">START WEBCAM</button>
+    </div>
 
     <div id="unity-container" class="unity-desktop">
         <canvas id="unity-canvas"></canvas>
@@ -157,61 +153,52 @@
         var canvas = document.querySelector("#unity-canvas");
         var loadingBar = document.querySelector("#unity-loading-bar");
         var progressBarFull = document.querySelector("#unity-progress-bar-full");
-        var webcamVideo = document.getElementById("webcamVideo");
 
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             container.className = "unity-mobile";
         }
 
-        async function StartCamera() {
-            // Hide start UI
-            document.getElementById("startWebcamDiv").style.display = "none";
-
-            // Resize canvas
+        function StartCamera() {
             canvas.style.width = window.innerWidth + "px";
             canvas.style.height = window.innerHeight + "px";
 
-            loadingBar.style.display = "block";
+            document.getElementById("startWebcamDiv").style.display = "none";
 
-            try {
-                // Get default webcam stream
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                
-                // Set stream to video element to show preview behind Unity canvas
-                webcamVideo.srcObject = stream;
-                webcamVideo.style.display = "block";
+            createUnityInstance(document.querySelector("#unity-canvas"), {
+                dataUrl: "Build/WEBGL_AR.data",
+                frameworkUrl: "Build/WEBGL_AR.framework.js",
+                codeUrl: "Build/WEBGL_AR.wasm",
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "DefaultCompany",
+                productName: "WebGL-FirstTest",
+                productVersion: "0.1.0",
+            }, (progress) => {
+                progressBarFull.style.width = 100 * progress + "%";
+            }).then((unityInstance) => {
+                window.gameInstance = unityInstance;
+                window.unityInstance = unityInstance;
+                window.iTracker.startWebcam();
 
-                // Initialize Unity instance
-                createUnityInstance(canvas, {
-                    dataUrl: "Build/WEBGL_AR.data",
-                    frameworkUrl: "Build/WEBGL_AR.framework.js",
-                    codeUrl: "Build/WEBGL_AR.wasm",
-                    streamingAssetsUrl: "StreamingAssets",
-                    companyName: "DefaultCompany",
-                    productName: "WebGL-FirstTest",
-                    productVersion: "0.1.0",
-                }, (progress) => {
-                    progressBarFull.style.width = 100 * progress + "%";
-                }).then((unityInstance) => {
-                    window.gameInstance = unityInstance;
-                    window.unityInstance = unityInstance;
+                window.waitForVideo = () => {
+                    setTimeout(() => {
+                        if (!window.iTracker.VIDEO) {
+                            window.waitForVideo();
+                        } else if (window.iTracker.VIDEO.currentTime <= 0) {
+                            document.getElementById("startWebcamManuallyDiv").style.display = "flex";
+                        }
+                    }, 2500);
+                };
+                window.waitForVideo();
 
-                    // If your iTracker uses the same stream or needs to be told to start:
-                    if (window.iTracker && typeof window.iTracker.startWebcam === 'function') {
-                        // Optionally pass stream here or just call
-                        window.iTracker.startWebcam();
-                    } else {
-                        console.warn("iTracker.startWebcam() not available");
-                    }
-
-                    loadingBar.style.display = "none";
-                });
-            } catch (err) {
-                console.error("Error accessing webcam:", err);
-                alert("Unable to access camera. Please allow camera permissions and refresh.");
-                document.getElementById("startWebcamDiv").style.display = "flex";
                 loadingBar.style.display = "none";
-            }
+            });
+
+            loadingBar.style.display = "block";
+        }
+
+        function StartCameraManually() {
+            document.getElementById("startWebcamManuallyDiv").style.display = "none";
+            iTracker.VIDEO.play();
         }
     </script>
 </body>
