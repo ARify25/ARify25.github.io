@@ -126,6 +126,8 @@
             document.getElementById("startARDiv").style.display = "none";
 
             const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            // Fix for Safari on iOS: use 'true' instead of facingMode to avoid black camera
             let camSettings = {
                 video: isiOS ? true : { facingMode: window.unityFacingMode },
                 audio: false
@@ -135,7 +137,7 @@
                 const stream = await navigator.mediaDevices.getUserMedia(camSettings);
                 const video = document.querySelector("#webcam-video");
                 video.srcObject = stream;
-                await video.play();
+                await video.play();  // Important to play the video explicitly on iOS Safari
                 await arCamera.startWebcam(video);
                 console.log("Camera started successfully");
 
