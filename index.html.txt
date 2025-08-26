@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Repository Index</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      color: #333;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+    li {
+      margin: 0.5rem 0;
+    }
+    a {
+      display: block;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-decoration: none;
+      color: #007acc;
+      transition: background 0.2s ease;
+    }
+    a:hover {
+      background: #e6f2ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Repository Index</h1>
+  <ul>
+    <li><a href="folder1/">Folder 1</a></li>
+    <li><a href="folder2/">Folder 2</a></li>
+    <li><a href="folder3/">Folder 3</a></li>
+  </ul>
+</body>
+</html>
