@@ -33,15 +33,30 @@
     </style>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TGCFY338C5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  gtag('config', 'G-TGCFY338C5');
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkzPgHJ4J_eb3stv754gsT_BBkGb70aNU",
+    authDomain: "arify-ffb4e.firebaseapp.com",
+    projectId: "arify-ffb4e",
+    storageBucket: "arify-ffb4e.firebasestorage.app",
+    messagingSenderId: "471529632848",
+    appId: "1:471529632848:web:ed0ac281adc4c1f3220d55",
+    measurementId: "G-TVYCX60JSH"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 </script>
+
 <body>
     <!--IMAGETARGETS-->
 		<imagetarget id='bear' src='targets/bear.png'></imagetarget>
