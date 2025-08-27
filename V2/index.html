@@ -32,6 +32,31 @@
         }
     </style>
 </head>
+
+<script type="module">
+  // Import Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkzPgHJ4J_eb3stv754gsT_BBkGb70aNU",
+    authDomain: "arify-ffb4e.firebaseapp.com",
+    projectId: "arify-ffb4e",
+    storageBucket: "arify-ffb4e.firebasestorage.app",
+    messagingSenderId: "471529632848",
+    appId: "1:471529632848:web:ed0ac281adc4c1f3220d55",
+    measurementId: "G-TVYCX60JSH"
+  };
+
+  // Initialize Firebase	
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  // Example event
+  logEvent(analytics, 'page_view');
+</script>
+
 <body>
     <!--IMAGETARGETS-->
 		<imagetarget id='bear' src='targets/bear.png'></imagetarget>
