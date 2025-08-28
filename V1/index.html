@@ -32,31 +32,6 @@
         }
     </style>
 </head>
-
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCkzPgHJ4J_eb3stv754gsT_BBkGb70aNU",
-    authDomain: "arify-ffb4e.firebaseapp.com",
-    projectId: "arify-ffb4e",
-    storageBucket: "arify-ffb4e.firebasestorage.app",
-    messagingSenderId: "471529632848",
-    appId: "1:471529632848:web:ed0ac281adc4c1f3220d55",
-    measurementId: "G-TVYCX60JSH"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
 <body>
     <!--IMAGETARGETS-->
 		<imagetarget id='bear' src='targets/bear.png'></imagetarget>
@@ -106,7 +81,7 @@
     </div>
     <script src="arcamera.js" type="text/javascript"></script>
     <script src="itracker.js" type="text/javascript"></script>
-    <script src="Build/V1.loader.js"></script>
+    <script src="Build/686d3c656b1fe83768e3434ec3f335e1.loader.js"></script>
     <script>
             var initialize = async() =>{
                 var unityCanvas = document.querySelector("#unity-canvas");
@@ -138,9 +113,9 @@
                 
                 document.getElementById("startARDiv").style.display = "none";
                 createUnityInstance(document.querySelector("#unity-canvas"), {
-                    dataUrl: "Build/V1.data",
-                    frameworkUrl: "Build/V1.framework.js",
-                    codeUrl: "Build/V1.wasm",
+                    dataUrl: "Build/2c463260f292956bca8a80c3df1918c0.data",
+                    frameworkUrl: "Build/fcd22945dc602461e1e0a7806cff3143.framework.js",
+                    codeUrl: "Build/ad8b4736590748e8f8d07c41cd491612.wasm",
                     streamingAssetsUrl: "StreamingAssets",
                     companyName: "ARify",
                     productName: "WebGL-FirstTest",
