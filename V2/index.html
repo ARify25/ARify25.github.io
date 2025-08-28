@@ -55,6 +55,16 @@
 
   // Example event
   logEvent(analytics, 'page_view');
+  
+  window.logUnityEvent = (eventName, jsonParams) => {
+    try {
+      const params = jsonParams ? JSON.parse(jsonParams) : {};
+      logEvent(analytics, eventName, params);
+      console.log("Logged event from Unity:", eventName, params);
+    } catch (e) {
+      console.error("Failed to log Unity event", e);
+    }
+  };
 </script>
 
 <body>
