@@ -256,33 +256,14 @@
     document.getElementById("startARButton").style.display = "block";
 }
 
-               // var select = document.getElementById("chooseCamSel");
-                select.style.display = "block";
-                var count = 0;
-                //reverse array because some Android phones can't distinguish front and back cams at first load
-                //and when this happens, most of the time, front cam goes first and back cam goes last
-                camDevices = camDevices.reverse();
-                camDevices.forEach(mediaDevice => {
-                    const option = document.createElement('option');
-                    option.value = mediaDevice.deviceId;
-                    let label = `Camera ${count}`;
-                    if (mediaDevice.label) {
-                        label = mediaDevice.label
-                    }
-                    const textNode = document.createTextNode(label);
-                    option.appendChild(textNode);
-                    select.appendChild(option);
-                    count++;
-                });
-                iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
-            }
-            function SelectCam(){
-                var select = document.getElementById("chooseCamSel");
-                window.deviceId = select.value;
-                window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
-                //console.log(window.WEBCAM_SETTINGS);
-                iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
-            }
+             
+            // function SelectCam(){
+            //     var select = document.getElementById("chooseCamSel");
+            //     window.deviceId = select.value;
+            //     window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
+            //     //console.log(window.WEBCAM_SETTINGS);
+            //     iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
+            // }
             async function FlipCam(){
                 arCamera.stopWebcam();
                 window.WEBCAM_SETTINGS.video.deviceId = '';
