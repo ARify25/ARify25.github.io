@@ -229,29 +229,33 @@
                     window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamFail');
                 }  
             }
-            async function LoadWebcams(){
-                let camDevices = [];
-                // let backCams = [];
-                let devices = await navigator.mediaDevices.enumerateDevices();
-                var ctr = 0;
-                devices.forEach(mediaDevice => {
-                    if (mediaDevice.kind === 'videoinput') {
-                        if(window.unityFacingMode == 'environment' && !mediaDevice.label.includes('facing front')){
-                            //back cam only
-                            camDevices.push(mediaDevice);
-                        }
-                        else if(window.unityFacingMode == 'user' && mediaDevice.label.includes('facing front')){
-                            //front cam only
-                            camDevices.push(mediaDevice);
-                        }
-                        else{
-                            //back and front
-                            camDevices.push(mediaDevice);
-                        }   
-                        
-                        ctr++;
-                    }
-                });
+           async function LoadWebcams(){
+    let devices = await navigator.mediaDevices.enumerateDevices();
+    let camDevices = devices.filter(d => d.kind === 'videoinput');
+
+    // Reverse list because sometimes devices return front cam first.
+    camDevices = camDevices.reverse();
+
+    // Auto-select based on facingMode preference
+    let chosenCam = camDevices[0];
+
+    // If we specifically want back camera and it's identifiable
+    if (window.unityFacingMode === "environment") {
+        const backCam = camDevices.find(d => d.label.toLowerCase().includes("back") || d.label.toLowerCase().includes("rear"));
+        if (backCam) chosenCam = backCam;
+    }
+
+    // Apply to webcam settings
+    window.deviceId = chosenCam.deviceId;
+    window.WEBCAM_SETTINGS.video.deviceId = chosenCam.deviceId;
+
+    // Set tracker name (optional UI info only)
+    iTracker.WEBCAM_NAME = chosenCam.label || "Camera";
+
+    // Done → Show button
+    document.getElementById("startARButton").style.display = "block";
+}
+
                // var select = document.getElementById("chooseCamSel");
                 select.style.display = "block";
                 var count = 0;
