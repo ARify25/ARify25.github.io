@@ -1,6 +1,11 @@
-/Build/*.br
+/Build/77a14f31620ad7931b0eb529dc80be55.wasm
+    Content-Type: application/wasm
     Content-Encoding: br
 
-/Build/*js.br
+/Build/a7a63a4aa8464c2e1939b7b0f9ac93b1.data
+    Content-Type: application/octet-stream
+    Content-Encoding: br
+
+/Build/e8a65cb2438ec4be9b222a7673b5d1c0.framework.js
     Content-Type: application/javascript
     Content-Encoding: br
