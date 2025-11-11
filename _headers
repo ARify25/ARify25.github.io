@@ -1,2 +1,6 @@
 /Build/*.br
     Content-Encoding: br
+
+/Build/*js.br
+    Content-Type: application/javascript
+    Content-Encoding: br
