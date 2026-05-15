@@ -1,7 +1,0 @@
-/Build/*.wasm.br
-  Content-Type: application/wasm
-  Content-Encoding: br
-
-/Build/*.framework.js.br
-  Content-Type: application/javascript
-  Content-Encoding: br

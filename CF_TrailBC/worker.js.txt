@@ -1,0 +1,23 @@
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    let response = await env.ASSETS.fetch(request);
+    const headers = new Headers(response.headers);
+
+    if (path.endsWith('.wasm.br')) {
+      headers.set('Content-Encoding', 'br');
+      headers.set('Content-Type', 'application/wasm');
+      return new Response(response.body, { status: response.status, headers });
+    }
+
+    if (path.endsWith('.framework.js.br')) {
+      headers.set('Content-Encoding', 'br');
+      headers.set('Content-Type', 'application/javascript');
+      return new Response(response.body, { status: response.status, headers });
+    }
+
+    return response;
+  }
+};
