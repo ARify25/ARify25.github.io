@@ -1,11 +1,7 @@
-/Build/759212108c8ef6f64765cf8aca62e159.wasm
-    Content-Type: application/wasm
-    Content-Encoding: br
+/Build/*.wasm.br
+  Content-Type: application/wasm
+  Content-Encoding: br
 
-/Build/e1802863d98e76ddd48f4974f06021ba.data
-    Content-Type: application/octet-stream
-    Content-Encoding: br
-
-/Build/bc4b4dce2ba09f6bbfd15bc7b0493a2c.framework.js
-    Content-Type: application/javascript
-    Content-Encoding: br
+/Build/*.framework.js.br
+  Content-Type: application/javascript
+  Content-Encoding: br
