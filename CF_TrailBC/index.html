@@ -62,6 +62,33 @@
             font-size: 16px;
             margin: 0 0 20px 0;
         }
+
+        /* Loading bar contrast fix for dark background */
+        #unity-loading-bar {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        #unity-progress-bar-empty {
+            width: 60vw;
+            max-width: 320px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        #unity-progress-bar-full {
+            height: 100%;
+            width: 0%;
+            background: white;
+            border-radius: 3px;
+            transition: width 0.2s ease;
+        }
     </style>
 </head>
 <body>
@@ -173,7 +200,7 @@
                         RequestWebcam();
                     loadingBar.style.display = "none";
                 });
-                loadingBar.style.display = "block";
+                loadingBar.style.display = "flex";
             }
             //Set Facing Mode here ('environment', 'user', '')
 		window.unityFacingMode = "environment"
