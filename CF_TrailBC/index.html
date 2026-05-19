@@ -10,7 +10,6 @@
             height: -webkit-fill-available;
         }
         body {
-            background-color: #202829;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -28,66 +27,8 @@
             right: 0;
             top: 0;
             bottom: 0;
-            background: #202829;
-            color: white;
+            background: #fffa;
             z-index: 99;
-        }
-
-        #startARButton {
-            padding: 14px 32px;
-            background: white;
-            color: #202829;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s ease, background 0.25s ease, color 0.25s ease;
-        }
-
-        #startARButton:hover {
-            background: #e6e6e6;
-            transform: translateY(-2px);
-        }
-
-        #startARButton:active {
-            transform: translateY(0);
-        }
-
-        .ctaDiv p {
-            text-align: center;
-            width: 70vw;
-            max-width: 480px;
-            font-size: 16px;
-            margin: 0 0 20px 0;
-        }
-
-        /* Loading bar contrast fix for dark background */
-        #unity-loading-bar {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-        }
-        #unity-progress-bar-empty {
-            width: 60vw;
-            max-width: 320px;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-        }
-        #unity-progress-bar-full {
-            height: 100%;
-            width: 0%;
-            background: white;
-            border-radius: 3px;
-            transition: width 0.2s ease;
         }
     </style>
 </head>
@@ -113,7 +54,7 @@
     <video id="webcam-video" muted autoplay playsinline style="width:1px;position:absolute"></video>
     <canvas id="video-canvas" style="width:100%; height:100%; object-fit:cover; position:absolute"></canvas>
     <div id="startARDiv" class="ctaDiv">
-        <!-- <select id="chooseCamSel" style="display: none;" onchange="SelectCam()"></select> -->
+        <select id="chooseCamSel" style="display: none;" onchange="SelectCam()"></select>
         <p style="text-align: center; width:60vw;">This augmented reality experience requires access to your device's camera</p>
         <button id="startARButton" onclick="StartAR()" style="display:none">ALLOW ACCESS</button>
     </div>
@@ -136,10 +77,9 @@
         <p id="errorText" style="text-align: center; width:60vw; color:white"></p>
     </div>
     <div id="unity-container" class="unity-mobile">
-		<canvas id="unity-canvas" style="width: 100%; height: 100%; background: #0000; z-index: -99"></canvas>
+        <canvas id="unity-canvas" style="width: 100%; height: 100%; background: #0000; z-index: -99"></canvas>
         <div id="unity-loading-bar">
-            <!-- <div id="unity-logo"></div> -->
-            <div id="arify-logo"></div>
+            <div id="unity-logo"></div>
             <div id="unity-progress-bar-empty">
                 <div id="unity-progress-bar-full"></div>
             </div>
@@ -180,9 +120,9 @@
                 
                 document.getElementById("startARDiv").style.display = "none";
                 createUnityInstance(document.querySelector("#unity-canvas"), {
-                    dataUrl: "https://pub-fe4f698934c64dd6b4a62e98eb87bb4f.r2.dev/67b055d144bb6711a7faf7265ee33ae6.data",
+                    dataUrl: "Build/16badbea139dde07150e037a52cb66ed.data",
                     frameworkUrl: "Build/bc4b4dce2ba09f6bbfd15bc7b0493a2c.framework.js",
-                    codeUrl: "https://pub-fe4f698934c64dd6b4a62e98eb87bb4f.r2.dev/759212108c8ef6f64765cf8aca62e159.wasm",
+                    codeUrl: "Build/759212108c8ef6f64765cf8aca62e159.wasm",
                     streamingAssetsUrl: "StreamingAssets",
                     companyName: "ARify",
                     productName: "WebGL-FirstTest",
@@ -200,7 +140,7 @@
                         RequestWebcam();
                     loadingBar.style.display = "none";
                 });
-                loadingBar.style.display = "flex";
+                loadingBar.style.display = "block";
             }
             //Set Facing Mode here ('environment', 'user', '')
 		window.unityFacingMode = "environment"
@@ -260,39 +200,55 @@
                 }  
             }
             async function LoadWebcams(){
+                let camDevices = [];
+                // let backCams = [];
                 let devices = await navigator.mediaDevices.enumerateDevices();
-                let camDevices = devices.filter(d => d.kind === 'videoinput');
-
-                // Reverse list because sometimes devices return front cam first.
+                var ctr = 0;
+                devices.forEach(mediaDevice => {
+                    if (mediaDevice.kind === 'videoinput') {
+                        if(window.unityFacingMode == 'environment' && !mediaDevice.label.includes('facing front')){
+                            //back cam only
+                            camDevices.push(mediaDevice);
+                        }
+                        else if(window.unityFacingMode == 'user' && mediaDevice.label.includes('facing front')){
+                            //front cam only
+                            camDevices.push(mediaDevice);
+                        }
+                        else{
+                            //back and front
+                            camDevices.push(mediaDevice);
+                        }   
+                        
+                        ctr++;
+                    }
+                });
+                var select = document.getElementById("chooseCamSel");
+                select.style.display = "block";
+                var count = 0;
+                //reverse array because some Android phones can't distinguish front and back cams at first load
+                //and when this happens, most of the time, front cam goes first and back cam goes last
                 camDevices = camDevices.reverse();
-
-                // Auto-select based on facingMode preference
-                let chosenCam = camDevices[0];
-
-                // If we specifically want back camera and it's identifiable
-                if (window.unityFacingMode === "environment") {
-                    const backCam = camDevices.find(d => d.label.toLowerCase().includes("back") || d.label.toLowerCase().includes("rear"));
-                    if (backCam) chosenCam = backCam;
-                }
-
-                // Apply to webcam settings
-                window.deviceId = chosenCam.deviceId;
-                window.WEBCAM_SETTINGS.video.deviceId = chosenCam.deviceId;
-
-                // Set tracker name (optional UI info only)
-                iTracker.WEBCAM_NAME = chosenCam.label || "Camera";
-
-                // Done → Show button
-                document.getElementById("startARButton").style.display = "block";
+                camDevices.forEach(mediaDevice => {
+                    const option = document.createElement('option');
+                    option.value = mediaDevice.deviceId;
+                    let label = `Camera ${count}`;
+                    if (mediaDevice.label) {
+                        label = mediaDevice.label
+                    }
+                    const textNode = document.createTextNode(label);
+                    option.appendChild(textNode);
+                    select.appendChild(option);
+                    count++;
+                });
+                iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
             }
-
-            // function SelectCam(){
-            //     var select = document.getElementById("chooseCamSel");
-            //     window.deviceId = select.value;
-            //     window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
-            //     //console.log(window.WEBCAM_SETTINGS);
-            //     iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
-            // }
+            function SelectCam(){
+                var select = document.getElementById("chooseCamSel");
+                window.deviceId = select.value;
+                window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
+                //console.log(window.WEBCAM_SETTINGS);
+                iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
+            }
             async function FlipCam(){
                 arCamera.stopWebcam();
                 window.WEBCAM_SETTINGS.video.deviceId = '';
