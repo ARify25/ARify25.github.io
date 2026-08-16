@@ -55,8 +55,6 @@
 </head>
 <body>
     <!--IMAGETARGETS-->
-		<imagetarget id='IMG_20260116_162726' src='targets/bcmural_ref.jpg'></imagetarget>
-		<imagetarget id='BC_Mural_Image' src='targets/bcmural_ref.jpg'></imagetarget>
 		<imagetarget id='Trail_BC_Mural' src='targets/Trail_BC_Mural.jpg'></imagetarget>
 		<imagetarget id='Trail_BC_Mural_SEG_1' src='targets/Trail_BC_Mural_SEG_1.png'></imagetarget>
 		<imagetarget id='Trail_BC_Mural_SEG_2' src='targets/Trail_BC_Mural_SEG_2.png'></imagetarget>
@@ -133,7 +131,7 @@
                 
                 document.getElementById("startARDiv").style.display = "none";
                 createUnityInstance(document.querySelector("#unity-canvas"), {
-                    dataUrl: "https://pub-fe4f698934c64dd6b4a62e98eb87bb4f.r2.dev/6161586a35940fd094350f17aefd6663.data.unityweb",
+                    dataUrl: "Build/5ed53625b413a47015d347cc4c8299e4.data.unityweb",
                     frameworkUrl: "Build/bc4b4dce2ba09f6bbfd15bc7b0493a2c.framework.js.unityweb",
                     codeUrl: "Build/95511a78a157d6346596b81d09316f78.wasm.unityweb",
                     streamingAssetsUrl: "StreamingAssets",
@@ -220,25 +218,23 @@
             async function LoadWebcams(){
                 let devices = await navigator.mediaDevices.enumerateDevices();
                 let camDevices = devices.filter(d => d.kind === 'videoinput');
-
                 // Reverse list because sometimes devices return front cam first.
                 camDevices = camDevices.reverse();
-
+                // Auto-select based on facingMode preference
                 let chosenCam = camDevices[0];
-
+                // If we specifically want back camera and it's identifiable
                 if (window.unityFacingMode === "environment") {
                     const backCam = camDevices.find(d => d.label.toLowerCase().includes("back") || d.label.toLowerCase().includes("rear"));
                     if (backCam) chosenCam = backCam;
                 }
-
                 if (chosenCam) {
                     window.deviceId = chosenCam.deviceId;
                     window.WEBCAM_SETTINGS.video.deviceId = chosenCam.deviceId;
                     iTracker.WEBCAM_NAME = chosenCam.label || "Camera";
                 }
-
                 document.getElementById("startARButton").style.display = "block";
             }
+            // Only reachable if the camera picker above is re-enabled.
             function SelectCam(){
                 var select = document.getElementById("chooseCamSel");
                 if (!select) return;
